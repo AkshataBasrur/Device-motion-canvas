@@ -1,0 +1,142 @@
+<html>
+  <head>
+    <title>My Bridget Riley image</title>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+      let start = new Date().getTime();
+      window.addEventListener("load", (event) => {
+        let loading = new Date().getTime() - start;
+        console.log("Loading time is: " + loading + " milliseconds");
+      });
+      document.addEventListener("readystatechange", (event) => {
+        let loading = new Date().getTime() - start;
+        console.log("State change: " + loading + " milliseconds");
+      });
+      document.addEventListener("DOMContentLoaded", (event) => {
+        let loading = new Date().getTime() - start;
+        console.log("DOM Content Loaded : " + loading + " milliseconds");
+      });
+
+      function drawCircles(y1) {
+        var theCanvas = document.getElementById("myCanvas");
+        theCanvas.width = window.innerWidth;
+        theCanvas.height = window.innerHeight;
+        function toRadians(deg) {
+          return (deg * Math.PI) / 180;
+        }
+        var c = theCanvas.getContext("2d");
+        if (theCanvas.getContext) {
+          var cw = theCanvas.width / 2;
+          var ch = theCanvas.height / 2;
+          var wradius = cw * 2;
+          var hradius = ch * 2;
+          for (var j = 0; j < 4; j++) {
+            c.beginPath();
+            var startAngle = 250;
+            var endAngle = startAngle + 20;
+            wradius =
+              wradius == cw * 2 - 0.21 * cw && j == 1
+                ? 0.67 * cw
+                : wradius - 0.21 * cw;
+            hradius =
+              hradius == ch * 2 - 0.21 * ch && j == 1
+                ? 0.67 * ch
+                : hradius - 0.21 * ch;
+            for (var i = 0; i <= 360 / 18; i++) {
+              c.beginPath();
+              var cx = theCanvas.width / 2;
+              var cy = theCanvas.height / 2;
+              startAngle = startAngle == 360 ? 0 : startAngle + 20;
+              endAngle = startAngle == 360 ? 20 : startAngle + 20;
+              c.moveTo(cx, cy);
+              console.log(cx, cy, wradius, hradius, startAngle, endAngle);
+              c.ellipse(
+                cx,
+                cy,
+                wradius + 20,
+                hradius,
+                0,
+                toRadians(startAngle),
+                toRadians(endAngle)
+              );
+              c.lineTo(cx, cy);
+              c.closePath();
+              if ((i % 2 != 0 && j % 2 == 0) || (j % 2 != 0 && i % 2 == 0)) {
+                if (j != 0) {
+                  var color = [];
+                  for (var ij = 0; ij < 3; ij++) {
+                    color.push(Math.floor(Math.random() * 256));
+                  }
+                  c.fillStyle = "rgb(" + color.join(",") + ")";
+                } else c.fillStyle = "black";
+                c.fill();
+              } else {
+                c.fillStyle = "white";
+                c.fill();
+              }
+            }
+            if (j == 0) {
+              c.beginPath();
+              c.translate(cx, cy);
+              c.rotate((y1 * Math.PI) / 180);
+              c.translate(-cx, -cy);
+            }
+          }
+        }
+      }
+
+      // if (window.DeviceMotionEvent) {
+      //   window.addEventListener("deviceorientation", motion, true);
+      // }
+
+      function motion(event) {
+        gx = event.beta;
+        gy = event.gamma;
+        // if (gx > 90) {
+        //   gx = 90;
+        // }
+        // if (gx < -90) {
+        //   gx = -90;
+        // }
+        requestAnimationFrame(drawCircles(gy * 1.5));
+      }
+
+      var requestAnimationFrame =
+        window.requestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.msRequestAnimationFrame;
+
+      window.addEventListener("devicemotion", animate, true);
+      var x = null;
+      var shiftx = 0,
+        shifty = 0;
+      function animate(event) {
+        x = event;
+        shiftx = event.accelerationIncludingGravity.x;
+        shifty = event.accelerationIncludingGravity.y;
+        // context.arc(x, y, radius, 0, Math.PI * 2, false);
+
+        // //now, erase the arc by clearing a rectangle that's slightly larger than the arc
+        // context.beginPath();
+        // context.clearRect(
+        //   x - radius - 1,
+        //   y - radius - 1,
+        //   radius * 2 + 2,
+        //   radius * 2 + 2
+        // );
+        // context.closePath();
+        window.requestAnimationFrame(function () {
+          drawCircles(shifty * 15);
+        });
+      }
+    </script>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </body>
+</html>
